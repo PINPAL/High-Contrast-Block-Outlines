@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
@@ -41,14 +42,6 @@ public abstract class LevelRendererMixin {
             double d2, double d3, float f, float f2, float f3, float f4) {
     };
 
-    @Inject(method = "renderShape(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/phys/shapes/VoxelShape;DDDFFFF)V", at = @At("HEAD"), cancellable = true)
-    private static void logRenderShapeCall(PoseStack poseStack, VertexConsumer vertexConsumer, VoxelShape voxelShape,
-            double d,
-            double d2, double d3, float colorR, float colorG, float colorB, float colorA, CallbackInfo ci) {
-        System.out.println("Render Shape with color: " + colorR + ", " + colorG + ", " + colorB + ", " + colorA
-                + " with " + vertexConsumer);
-    }
-
     @Inject(method = "renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", at = @At("HEAD"), cancellable = true)
     private void replaceHitOutlineColor(PoseStack poseStack,
             VertexConsumer vertexConsumer, Entity entity,
@@ -58,18 +51,11 @@ public abstract class LevelRendererMixin {
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(entity)),
                 (double) blockPos.getX() - d,
-                (double) blockPos.getY() - e, (double) blockPos.getZ() - f, 1.0f, 0.0f, 0.0f,
+                (double) blockPos.getY() - e, (double) blockPos.getZ() - f, 0.3411764706f, 1.0f, 0.8823529412f,
                 1.0f);
 
         ci.cancel();
     }
-
-    // @Shadow
-    // private void renderHitOutline(PoseStack p_109638_, VertexConsumer p_109639_,
-    // Entity p_109640_, double p_109641_,
-    // double p_109642_, double p_109643_, BlockPos p_109644_, BlockState p_109645_)
-    // {
-    // };
 
     // TODO: Consider using MixinExtras to avoid capturing unused locals:
     // TODO: https://github.com/LlamaLad7/MixinExtras
@@ -98,11 +84,12 @@ public abstract class LevelRendererMixin {
     ) {
 
         VertexConsumer vertexConsumer = bufferSource.getBuffer(CustomRenderType.SECONDARY_BLOCK_OUTLINE);
-        // renderHitOutline(poseStack, vertexConsumer, camera.getEntity(), xPos, yPos,
-        // zPos, blockPos, blockState);
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(camera.getEntity())),
                 (double) blockPos.getX() - xPos,
-                (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos, 0.0f, 1.0f, 0.0f, 1.0f);
+                (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos, 0.0f, 0.0f, 0.0f, 1.0f);
+
+        // Reset vertexConsumer to the original state
+        vertexConsumer = bufferSource.getBuffer(RenderType.lines());
     }
 }
