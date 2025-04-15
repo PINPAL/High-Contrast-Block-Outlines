@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.GameRenderer;
 
 public class CustomRenderType {
-    public static final RenderType SECONDARY_BLOCK_OUTLINE = RenderType.create(
+    public static final RenderType.CompositeRenderType SECONDARY_BLOCK_OUTLINE = RenderType.create(
             "secondary_block_outline",
             DefaultVertexFormat.POSITION_COLOR_NORMAL,
             VertexFormat.Mode.LINES,
@@ -23,7 +23,7 @@ public class CustomRenderType {
                     .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getRendertypeLinesShader))
                     .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.of(7.0)))
                     .setLayeringState(RenderStateShardAccessor.getViewOffsetZLayering())
-                    .setTransparencyState(RenderStateShardAccessor.getTranslucentTransparency())
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setOutputState(RenderStateShardAccessor.getItemEntityTarget())
                     .setWriteMaskState(RenderStateShardAccessor.getColorDepthWrite())
                     .setCullState(RenderStateShardAccessor.getNoCull())
