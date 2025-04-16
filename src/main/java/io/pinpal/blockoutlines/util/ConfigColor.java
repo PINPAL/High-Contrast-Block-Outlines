@@ -1,17 +1,10 @@
 package io.pinpal.blockoutlines.util;
 
 public class ConfigColor {
-    private Float red;
-    private Float green;
-    private Float blue;
-    private Float alpha;
-
-    public ConfigColor() {
-        this.red = 0.0f;
-        this.green = 0.0f;
-        this.blue = 0.0f;
-        this.alpha = 1.0f;
-    }
+    private final Float red;
+    private final Float green;
+    private final Float blue;
+    private final Float alpha;
 
     public ConfigColor(int red, int green, int blue, int alpha) {
         this.red = red / 255.0f;
@@ -20,19 +13,19 @@ public class ConfigColor {
         this.alpha = alpha / 255.0f;
     }
 
-    public Float getRed() {
+    public final Float getRed() {
         return red;
     }
 
-    public Float getGreen() {
+    public final Float getGreen() {
         return green;
     }
 
-    public Float getBlue() {
+    public final Float getBlue() {
         return blue;
     }
 
-    public Float getAlpha() {
+    public final Float getAlpha() {
         return alpha;
     }
 }

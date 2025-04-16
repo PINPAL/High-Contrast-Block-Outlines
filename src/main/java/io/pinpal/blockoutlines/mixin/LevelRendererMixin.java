@@ -1,7 +1,7 @@
 package io.pinpal.blockoutlines.mixin;
 
 import io.pinpal.blockoutlines.SecondaryOutlineRenderType;
-import io.pinpal.blockoutlines.BlockOutlinesConfig;
+import io.pinpal.blockoutlines.config.BlockOutlinesConfig;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -84,8 +84,8 @@ public abstract class LevelRendererMixin {
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(camera.getEntity())),
                 (double) blockPos.getX() - xPos, (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos,
-                BlockOutlinesConfig.outlineColor.getRed(), BlockOutlinesConfig.outlineColor.getGreen(),
-                BlockOutlinesConfig.outlineColor.getBlue(), BlockOutlinesConfig.outlineColor.getAlpha());
+                BlockOutlinesConfig.outerColor.getRed(), BlockOutlinesConfig.outerColor.getGreen(),
+                BlockOutlinesConfig.outerColor.getBlue(), BlockOutlinesConfig.outerColor.getAlpha());
 
         // Reset vertexConsumer to the original state for the next render call 
         vertexConsumer = bufferSource.getBuffer(RenderType.lines());
