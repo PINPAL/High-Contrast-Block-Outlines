@@ -1,8 +1,8 @@
-package com.example.examplemod;
+package io.pinpal.blockoutlines;
 
 import java.util.OptionalDouble;
 
-import com.example.examplemod.mixin.RenderStateShardAccessor;
+import io.pinpal.blockoutlines.mixin.RenderStateShardAccessor;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.GameRenderer;
 
-public class CustomRenderType {
+public class SecondaryOutlineRenderType {
     public static final RenderType SECONDARY_BLOCK_OUTLINE = RenderType.create(
             "secondary_block_outline",
             DefaultVertexFormat.POSITION_COLOR_NORMAL,

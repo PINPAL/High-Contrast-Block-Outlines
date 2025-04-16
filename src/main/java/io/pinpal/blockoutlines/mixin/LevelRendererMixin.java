@@ -1,7 +1,7 @@
-package com.example.examplemod.mixin;
+package io.pinpal.blockoutlines.mixin;
 
-import com.example.examplemod.CustomRenderType;
-import com.example.examplemod.Config;
+import io.pinpal.blockoutlines.SecondaryOutlineRenderType;
+import io.pinpal.blockoutlines.Config;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -70,7 +70,7 @@ public abstract class LevelRendererMixin {
             boolean b2, Frustum frustum, float f2, boolean b3, boolean b4, BufferSource bufferSource,
             HitResult hitResult, BlockPos blockPos, BlockState blockState) {
 
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(CustomRenderType.SECONDARY_BLOCK_OUTLINE);
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(SecondaryOutlineRenderType.SECONDARY_BLOCK_OUTLINE);
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(camera.getEntity())),
                 (double) blockPos.getX() - xPos,
