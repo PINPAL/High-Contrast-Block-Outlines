@@ -1,7 +1,7 @@
 package io.pinpal.blockoutlines.mixin;
 
 import io.pinpal.blockoutlines.SecondaryOutlineRenderType;
-import io.pinpal.blockoutlines.Config;
+import io.pinpal.blockoutlines.BlockOutlinesConfig;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -42,22 +42,26 @@ public abstract class LevelRendererMixin {
     };
 
     @Inject(method = "renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", at = @At("HEAD"), cancellable = true)
-    private void replaceHitOutlineColor(PoseStack poseStack,
-            VertexConsumer vertexConsumer, Entity entity,
+    private void replaceHitOutlineColor(
+            PoseStack poseStack, VertexConsumer vertexConsumer, Entity entity,
             double d, double e, double f, BlockPos blockPos, BlockState blockState,
             CallbackInfo ci) {
 
+        // Check if the block outline is enabled
+        if (!BlockOutlinesConfig.ENABLED.get()) {
+            return;
+        }
+
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(entity)),
-                (double) blockPos.getX() - d,
-                (double) blockPos.getY() - e, (double) blockPos.getZ() - f, Config.innerColor[0], Config.innerColor[1],
-                Config.innerColor[2], Config.innerColor[3]);
+                (double) blockPos.getX() - d, (double) blockPos.getY() - e, (double) blockPos.getZ() - f,
+                BlockOutlinesConfig.innerColor.getRed(), BlockOutlinesConfig.innerColor.getGreen(),
+                BlockOutlinesConfig.innerColor.getBlue(), BlockOutlinesConfig.innerColor.getAlpha());
 
         ci.cancel();
     }
 
-    // TODO: Consider using MixinExtras to avoid capturing unused locals:
-    // TODO: https://github.com/LlamaLad7/MixinExtras
+    // TODO: Consider using https://github.com/LlamaLad7/MixinExtras to avoid capturing unused locals!
     @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void renderBlockOutline(
             // Native Parameters
@@ -70,14 +74,20 @@ public abstract class LevelRendererMixin {
             boolean b2, Frustum frustum, float f2, boolean b3, boolean b4, BufferSource bufferSource,
             HitResult hitResult, BlockPos blockPos, BlockState blockState) {
 
+        // Check if the block outline is enabled
+        if (!BlockOutlinesConfig.ENABLED.get()) {
+            return;
+        }
+
+        // Draw the border outline
         VertexConsumer vertexConsumer = bufferSource.getBuffer(SecondaryOutlineRenderType.SECONDARY_BLOCK_OUTLINE);
         renderShape(poseStack, vertexConsumer,
                 blockState.getShape(this.level, blockPos, CollisionContext.of(camera.getEntity())),
-                (double) blockPos.getX() - xPos,
-                (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos, Config.outlineColor[0],
-                Config.outlineColor[1], Config.outlineColor[2], Config.outlineColor[3]);
+                (double) blockPos.getX() - xPos, (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos,
+                BlockOutlinesConfig.outlineColor.getRed(), BlockOutlinesConfig.outlineColor.getGreen(),
+                BlockOutlinesConfig.outlineColor.getBlue(), BlockOutlinesConfig.outlineColor.getAlpha());
 
-        // Reset vertexConsumer to the original state
+        // Reset vertexConsumer to the original state for the next render call 
         vertexConsumer = bufferSource.getBuffer(RenderType.lines());
     }
 }

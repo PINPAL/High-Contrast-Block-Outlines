@@ -11,7 +11,7 @@ public class BlockOutlines {
     public static final String MODID = "blockoutlines";
 
     public BlockOutlines(FMLJavaModLoadingContext context) {
-        // Register ForgeConfigSpec to create/load config filr
-        context.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        // Register ForgeConfigSpec to create/load config file
+        context.registerConfig(ModConfig.Type.CLIENT, BlockOutlinesConfig.SPEC);
     }
 }

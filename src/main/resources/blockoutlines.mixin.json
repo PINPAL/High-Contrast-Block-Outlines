@@ -7,7 +7,8 @@
     "mixins": [],
     "client": [
         "LevelRendererMixin",
-        "RenderStateShardAccessor"
+        "RenderStateShardAccessor",
+        "AccessibilityOptionsScreenMixin"
     ],
     "server": [],
     "injectors": {

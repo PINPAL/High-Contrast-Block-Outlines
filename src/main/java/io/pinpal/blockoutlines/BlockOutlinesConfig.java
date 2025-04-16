@@ -1,13 +1,18 @@
 package io.pinpal.blockoutlines;
 
+import io.pinpal.blockoutlines.util.ConfigColor;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = BlockOutlines.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config {
+public class BlockOutlinesConfig {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+    public static final ForgeConfigSpec.BooleanValue ENABLED = BUILDER
+            .comment("Enable High Contrast Block Outlines")
+            .define("enabled", true);
 
     private static final ForgeConfigSpec.IntValue OUTLINE_COLOR_RED = BUILDER
             .comment("Outline Border Color - RED (0-255)")
@@ -43,31 +48,21 @@ public class Config {
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static Float[] outlineColor = new Float[4];
-    public static Float[] innerColor = new Float[4];
+    public static ConfigColor outlineColor;
+    public static ConfigColor innerColor;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
-        outlineColor = convertIntsToFloatArray(
+        outlineColor = new ConfigColor(
                 OUTLINE_COLOR_RED.get(),
                 OUTLINE_COLOR_GREEN.get(),
                 OUTLINE_COLOR_BLUE.get(),
                 OUTLINE_OPACITY.get());
-        innerColor = convertIntsToFloatArray(
+
+        innerColor = new ConfigColor(
                 INNER_COLOR_RED.get(),
                 INNER_COLOR_GREEN.get(),
                 INNER_COLOR_BLUE.get(),
                 INNER_OPACITY.get());
     }
-
-    // Convert int values between 0 and 255 to float array between 0.0 and 1.0
-    private static Float[] convertIntsToFloatArray(int red, int green, int blue, int alpha) {
-        return new Float[] {
-                red / 255.0f,
-                green / 255.0f,
-                blue / 255.0f,
-                alpha / 255.0f
-        };
-    }
-
 }
