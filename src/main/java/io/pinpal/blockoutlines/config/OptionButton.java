@@ -35,7 +35,7 @@ public class OptionButton {
                 OptionInstance.cachedConstantTooltip(tooltip),
                 (args, currentSliderValue) -> {
                     return sliderValueText(translationKey, currentSliderValue,
-                            (currentSliderValue == configKey.getDefault()));
+                            (currentSliderValue == configKey.getDefault().intValue()));
                 },
                 new OptionInstance.IntRange(0, 255),
                 Codec.intRange(0, 255),
