@@ -51,11 +51,20 @@ public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubSc
         this.blockOutlines$innerPreviewWidget.setFGColor(BlockOutlinesConfig.innerColor.getARGB32());
     }
 
+    // Enable/disable options based if the Block Outlines are enabled
+    @Unique
+    public void blockOutlines$rebuildWidgets() {
+        // Fetch the current scroll position to restore it after rebuilding the widgets
+        double scrollPosition = this.list.getScrollAmount();
+        this.rebuildWidgets();
+        this.list.setScrollAmount(scrollPosition);
+    }
+
     // Replace the "DONE" button to ensure it saves the config when clicked
     @ModifyArg(method = "createFooter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/Button;builder(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;", ordinal = 1), index = 1)
     private Button.OnPress adjustCallback(Button.OnPress onPress) {
         return (buttonClickEvent) -> {
-            BlockOutlinesConfig.updateColorConfigs();
+            BlockOutlinesConfig.updateConfigs();
             this.minecraft.setScreen(this.lastScreen);
         };
     }
@@ -63,17 +72,20 @@ public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubSc
     @Inject(method = "init()V", at = @At("TAIL"))
     protected void initInject(CallbackInfo callback) {
         this.list.addBig(blockOutlines$options.highContrastBlockOutline());
-        this.list.addSmall(blockOutlines$options.colorOptions());
 
-        this.blockOutlines$outerPreviewWidget = this.list.findOption(this.blockOutlines$options.outerPreview());
-        this.blockOutlines$outerPreviewWidget.setMessage(Component.translatable("options.pinpal.blockoutlines.outer_color.preview"));
-        this.blockOutlines$outerPreviewWidget.active = false;
+        if (BlockOutlinesConfig.isEnabled) {
+            this.list.addSmall(blockOutlines$options.colorOptions());
 
-        this.blockOutlines$innerPreviewWidget = this.list.findOption(this.blockOutlines$options.innerPreview());
-        this.blockOutlines$innerPreviewWidget.setMessage(Component.translatable("options.pinpal.blockoutlines.inner_color.preview"));
-        this.blockOutlines$innerPreviewWidget.active = false;
+            this.blockOutlines$outerPreviewWidget = this.list.findOption(this.blockOutlines$options.outerPreview());
+            this.blockOutlines$outerPreviewWidget.setMessage(Component.translatable("options.pinpal.blockoutlines.outer_color.preview"));
+            this.blockOutlines$outerPreviewWidget.active = false;
 
-        this.blockOutlines$updatePreviewWidgets();
+            this.blockOutlines$innerPreviewWidget = this.list.findOption(this.blockOutlines$options.innerPreview());
+            this.blockOutlines$innerPreviewWidget.setMessage(Component.translatable("options.pinpal.blockoutlines.inner_color.preview"));
+            this.blockOutlines$innerPreviewWidget.active = false;
+
+            this.blockOutlines$updatePreviewWidgets();
+        }
     }
 
 }

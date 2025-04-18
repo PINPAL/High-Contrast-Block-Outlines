@@ -77,10 +77,13 @@ public class BlockOutlinesConfig {
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
+    public static boolean isEnabled;
     public static ConfigColor outerColor;
     public static ConfigColor innerColor;
 
-    public static void updateColorConfigs() {
+    public static void updateConfigs() {
+        ENABLED.set(isEnabled);
+
         OUTER_COLOR_RED.set(outerColor.getRedInt());
         OUTER_COLOR_GREEN.set(outerColor.getGreenInt());
         OUTER_COLOR_BLUE.set(outerColor.getBlueInt());
@@ -94,6 +97,8 @@ public class BlockOutlinesConfig {
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
+        isEnabled = ENABLED.get();
+
         outerColor = new ConfigColor(
                 OUTER_COLOR_RED.get(),
                 OUTER_COLOR_GREEN.get(),

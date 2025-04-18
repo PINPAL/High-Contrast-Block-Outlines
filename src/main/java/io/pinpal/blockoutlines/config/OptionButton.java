@@ -63,8 +63,16 @@ public class OptionButton {
     private final OptionInstance<Boolean> highContrastBlockOutline = OptionInstance.createBoolean(
             "options.accessibility.high_contrast_block_outline",
             OptionInstance.cachedConstantTooltip(HIGH_CONTRAST_BLOCK_OUTLINE_TOOLTIP),
-            BlockOutlinesConfig.ENABLED.get(),
-            BlockOutlinesConfig.ENABLED::set);
+            BlockOutlinesConfig.isEnabled,
+            (newButtonState) -> {
+                BlockOutlinesConfig.isEnabled = newButtonState;
+
+                // Rebuild the widgets such that the Block Outlines options are shown/hidden
+                Screen currentScreen = Minecraft.getInstance().screen;
+                if (currentScreen instanceof AccessibilityOptionsScreenAccessor) {
+                    ((AccessibilityOptionsScreenAccessor) currentScreen).blockOutlines$rebuildWidgets();
+                }
+            });
 
     private final OptionInstance<Integer> outlineColorRed = colorSlider(
             "options.pinpal.blockoutlines.outline_color_red", "color.minecraft.red",
@@ -110,12 +118,12 @@ public class OptionButton {
         return this.highContrastBlockOutline;
     }
 
-    public OptionInstance<Boolean> outerPreview() {
-        return this.outerPreview;
-    }
-
     public OptionInstance<Boolean> innerPreview() {
         return this.innerPreview;
+    }
+
+    public OptionInstance<Boolean> outerPreview() {
+        return this.outerPreview;
     }
 
     public OptionInstance<?>[] colorOptions() {
