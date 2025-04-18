@@ -39,7 +39,7 @@ public abstract class LevelRendererMixin {
     @Shadow
     private static void renderShape(PoseStack poseStack, VertexConsumer vertexConsumer, VoxelShape voxelShape,
             double posX, double posY, double posZ, float colorR, float colorG, float colorB, float colorA) {
-    };
+    }
 
     @Inject(method = "renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", at = @At("HEAD"), cancellable = true)
     private void replaceHitOutlineColor(
@@ -62,10 +62,11 @@ public abstract class LevelRendererMixin {
     }
 
     // TODO: Consider using https://github.com/LlamaLad7/MixinExtras to avoid capturing unused locals!
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void renderBlockOutline(
             // Native Parameters
-            PoseStack poseStack, float f, long l, boolean b, Camera camera,
+            PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera,
             GameRenderer gameRenderer, LightTexture lightTexure, Matrix4f matrix4f,
             // Callback
             CallbackInfo ci,

@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.SimpleOptionsSubScreen;
 import net.minecraft.network.chat.Component;
 
+@SuppressWarnings("DataFlowIssue")
 @Mixin(AccessibilityOptionsScreen.class)
 public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubScreen {
 
@@ -31,9 +32,9 @@ public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubSc
     private AbstractWidget blockOutlines$innerPreviewWidget;
 
     @Shadow
-    private static OptionInstance<?>[] options(Options p_232691_) {
+    private static OptionInstance<?>[] options(Options options) {
         return null;
-    };
+    }
 
     // Fake constructor to allow the mixin to be created
     public AccessibilityOptionsScreenMixin(Screen screen, Options options) {

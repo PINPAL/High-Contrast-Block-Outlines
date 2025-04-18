@@ -6,11 +6,11 @@ public class ConfigColor {
     private Float blue;
     private Float alpha;
 
-    private final float intToFloat(int value) {
+    private float intToFloat(int value) {
         return value / 255.0f;
     }
 
-    private final int floatToInt(float value) {
+    private int floatToInt(float value) {
         return Math.round(value * 255);
     }
 
