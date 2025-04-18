@@ -89,6 +89,7 @@ public abstract class LevelRendererMixin {
                 BlockOutlinesConfig.outerColor.getBlue(), BlockOutlinesConfig.outerColor.getAlpha());
 
         // Reset vertexConsumer to the original state for the next render call 
+        //noinspection UnusedAssignment
         vertexConsumer = bufferSource.getBuffer(RenderType.lines());
     }
 }
