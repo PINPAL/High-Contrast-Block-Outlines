@@ -8,8 +8,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.pinpal.blockoutlines.config.OptionButton;
-import io.pinpal.blockoutlines.config.BlockOutlinesConfig;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -19,9 +17,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.SimpleOptionsSubScreen;
 import net.minecraft.network.chat.Component;
 
+import io.pinpal.blockoutlines.config.OptionButton;
+import io.pinpal.blockoutlines.config.BlockOutlinesConfig;
+import io.pinpal.blockoutlines.interfaces.AccessibilityOptionsScreenAccessor;
+
 @SuppressWarnings("DataFlowIssue")
 @Mixin(AccessibilityOptionsScreen.class)
-public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubScreen {
+public abstract class AccessibilityOptionsScreenMixin extends SimpleOptionsSubScreen implements AccessibilityOptionsScreenAccessor {
 
     @Unique
     private final OptionButton blockOutlines$options = new OptionButton();

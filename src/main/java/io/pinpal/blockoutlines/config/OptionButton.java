@@ -5,13 +5,14 @@ import java.util.function.Consumer;
 import com.mojang.serialization.Codec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.screens.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 import static net.minecraft.network.chat.Component.translatable;
+
+import io.pinpal.blockoutlines.interfaces.AccessibilityOptionsScreenAccessor;
 
 public class OptionButton {
     private static final Component HIGH_CONTRAST_BLOCK_OUTLINE_TOOLTIP = translatable("options.accessibility.high_contrast_block_outline.tooltip");
@@ -46,16 +47,10 @@ public class OptionButton {
                 newSliderValue -> {
                     colorSetter.accept(newSliderValue);
 
-                    // Refresh the preview if on the correct screen
+                    // Refresh the preview widgets in the AccessibilityOptionsScreen
                     Screen currentScreen = Minecraft.getInstance().screen;
-                    if (currentScreen instanceof AccessibilityOptionsScreen) {
-                        try {
-                            // Reflectively call the mixin method to update the preview widgets
-                            currentScreen.getClass().getDeclaredMethod("blockOutlines$updatePreviewWidgets").invoke(currentScreen);
-                        } catch (Exception e) {
-                            //noinspection CallToPrintStackTrace
-                            e.printStackTrace();
-                        }
+                    if (currentScreen instanceof AccessibilityOptionsScreenAccessor) {
+                        ((AccessibilityOptionsScreenAccessor) currentScreen).blockOutlines$updatePreviewWidgets();
                     }
                 });
     }
