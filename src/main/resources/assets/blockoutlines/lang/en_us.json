@@ -5,5 +5,7 @@
     "options.pinpal.blockoutlines.outer_opacity.tooltip": "Controls how transparent the outer border lines color is on the targeted block.",
     "options.pinpal.blockoutlines.inner_opacity.tooltip": "Controls how transparent the inner line color is on the targeted block.",
     "options.pinpal.blockoutlines.outer_color.tooltip": "Controls the color of the outer border lines on the targeted block.",
-    "options.pinpal.blockoutlines.inner_color.tooltip": "Controls the color of the inner line on the targeted block."
+    "options.pinpal.blockoutlines.inner_color.tooltip": "Controls the color of the inner line on the targeted block.",
+    "options.pinpal.blockoutlines.outer_color.preview": "Outer Border Color",
+    "options.pinpal.blockoutlines.inner_color.preview": "Inner Line Color"
 }

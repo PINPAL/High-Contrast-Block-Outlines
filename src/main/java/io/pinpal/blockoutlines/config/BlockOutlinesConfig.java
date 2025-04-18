@@ -80,6 +80,18 @@ public class BlockOutlinesConfig {
     public static ConfigColor outerColor;
     public static ConfigColor innerColor;
 
+    public static void updateColorConfigs() {
+        OUTER_COLOR_RED.set(outerColor.getRedInt());
+        OUTER_COLOR_GREEN.set(outerColor.getGreenInt());
+        OUTER_COLOR_BLUE.set(outerColor.getBlueInt());
+        OUTER_OPACITY.set(outerColor.getAlphaInt());
+
+        INNER_COLOR_RED.set(innerColor.getRedInt());
+        INNER_COLOR_GREEN.set(innerColor.getGreenInt());
+        INNER_COLOR_BLUE.set(innerColor.getBlueInt());
+        INNER_OPACITY.set(innerColor.getAlphaInt());
+    }
+
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
         outerColor = new ConfigColor(
