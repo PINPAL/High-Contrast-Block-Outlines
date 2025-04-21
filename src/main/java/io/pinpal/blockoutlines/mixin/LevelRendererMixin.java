@@ -5,30 +5,25 @@ import io.pinpal.blockoutlines.config.BlockOutlinesConfig;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.client.Camera;
-import net.minecraft.client.multiplayer.ClientLevel;
-
 import org.joml.Matrix4f;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.Desc;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import com.llamalad7.mixinextras.sugar.Local;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
@@ -38,58 +33,41 @@ public abstract class LevelRendererMixin {
 
     @Shadow
     private static void renderShape(PoseStack poseStack, VertexConsumer vertexConsumer, VoxelShape voxelShape,
-            double posX, double posY, double posZ, float colorR, float colorG, float colorB, float colorA) {
+                                    double posX, double posY, double posZ, float colorR, float colorG, float colorB, float colorA) {
     }
 
-    @Inject(method = "renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", at = @At("HEAD"), cancellable = true)
-    private void replaceHitOutlineColor(
-            PoseStack poseStack, VertexConsumer vertexConsumer, Entity entity,
-            double d, double e, double f, BlockPos blockPos, BlockState blockState,
-            CallbackInfo ci) {
-
-        // Check if the block outline is enabled
-        if (!BlockOutlinesConfig.ENABLED.get()) {
-            return;
-        }
-
-        renderShape(poseStack, vertexConsumer,
-                blockState.getShape(this.level, blockPos, CollisionContext.of(entity)),
-                (double) blockPos.getX() - d, (double) blockPos.getY() - e, (double) blockPos.getZ() - f,
-                BlockOutlinesConfig.innerColor.getRed(), BlockOutlinesConfig.innerColor.getGreen(),
-                BlockOutlinesConfig.innerColor.getBlue(), BlockOutlinesConfig.innerColor.getAlpha());
-
-        ci.cancel();
-    }
-
-    // TODO: Consider using https://github.com/LlamaLad7/MixinExtras to avoid capturing unused locals!
-    @SuppressWarnings("InvalidInjectorMethodSignature")
-    @Inject(method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lorg/joml/Matrix4f;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Desc(id = "renderBlockOutline.at", value = "renderHitOutline", args = {PoseStack.class, VertexConsumer.class, Entity.class, double.class, double.class, double.class, BlockPos.class, BlockState.class})
+    @Desc(id = "renderBlockOutline.method", value = "renderLevel", args = {PoseStack.class, float.class, long.class, boolean.class, Camera.class, GameRenderer.class, LightTexture.class, Matrix4f.class})
+    @Redirect(method = "@Desc(renderBlockOutline.method)", at = @At(value = "INVOKE", target = "@Desc(renderBlockOutline.at)"))
     private void renderBlockOutline(
-            // Native Parameters
-            PoseStack poseStack, float partialTick, long finishNanoTime, boolean renderBlockOutline, Camera camera,
-            GameRenderer gameRenderer, LightTexture lightTexure, Matrix4f matrix4f,
-            // Callback
-            CallbackInfo ci,
-            // Local Variable Capture
-            ProfilerFiller profilerFiller, Vec3 vec3, double xPos, double yPos, double zPos, Matrix4f matrix4f2,
-            boolean b2, Frustum frustum, float f2, boolean b3, boolean b4, BufferSource bufferSource,
-            HitResult hitResult, BlockPos blockPos, BlockState blockState) {
+        LevelRenderer instance, PoseStack pPoseStack, VertexConsumer pConsumer, Entity pEntity,
+        double pCamX, double pCamY, double pCamZ, BlockPos pPos, BlockState pState,
+        @SuppressWarnings("LocalMayBeArgsOnly") @Local(ordinal = 0) BufferSource bufferSource
+    ) {
+        // Default color for the inner line
+        float innerColorR = 0.0f, innerColorG = 0.0f, innerColorB = 0.0f;
+        float innerColorA = 0.4f;
 
-        // Check if the block outline is enabled
-        if (!BlockOutlinesConfig.ENABLED.get()) {
-            return;
-        }
-
-        // Draw the border outline
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(SecondaryOutlineRenderType.SECONDARY_BLOCK_OUTLINE);
-        renderShape(poseStack, vertexConsumer,
-                blockState.getShape(this.level, blockPos, CollisionContext.of(camera.getEntity())),
-                (double) blockPos.getX() - xPos, (double) blockPos.getY() - yPos, (double) blockPos.getZ() - zPos,
+        // Check the Block Outline is enabled
+        if (BlockOutlinesConfig.isEnabled) {
+            // Draw the border outline
+            VertexConsumer secondaryConsumer = bufferSource.getBuffer(SecondaryOutlineRenderType.SECONDARY_BLOCK_OUTLINE);
+            renderShape(pPoseStack, secondaryConsumer,
+                pState.getShape(this.level, pPos, CollisionContext.of(pEntity)),
+                (double) pPos.getX() - pCamX, (double) pPos.getY() - pCamY, (double) pPos.getZ() - pCamZ,
                 BlockOutlinesConfig.outerColor.getRed(), BlockOutlinesConfig.outerColor.getGreen(),
                 BlockOutlinesConfig.outerColor.getBlue(), BlockOutlinesConfig.outerColor.getAlpha());
+            // Update the inner color to match our config
+            innerColorR = BlockOutlinesConfig.innerColor.getRed();
+            innerColorG = BlockOutlinesConfig.innerColor.getGreen();
+            innerColorB = BlockOutlinesConfig.innerColor.getBlue();
+            innerColorA = BlockOutlinesConfig.innerColor.getAlpha();
+        }
 
-        // Reset vertexConsumer to the original state for the next render call 
-        //noinspection UnusedAssignment
-        vertexConsumer = bufferSource.getBuffer(RenderType.lines());
+        // Draw the inner line
+        renderShape(pPoseStack, pConsumer,
+            pState.getShape(this.level, pPos, CollisionContext.of(pEntity)),
+            (double) pPos.getX() - pCamX, (double) pPos.getY() - pCamY, (double) pPos.getZ() - pCamZ,
+            innerColorR, innerColorG, innerColorB, innerColorA);
     }
 }
